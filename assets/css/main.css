@@ -1,0 +1,21 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.nav {
+    background-color: lightblue;
+    height: 10%;
+}
+
+
+.content {
+    display: flex;
+    justify-content: center;
+}
+
+.canvas {
+    border: 1px solid black;
+    margin: 10vh;
+}
