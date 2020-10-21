@@ -7,6 +7,7 @@
 .nav {
     background-color: lightblue;
     height: 10%;
+    margin-bottom: 5vh;
 }
 
 
@@ -14,8 +15,81 @@
     display: flex;
     justify-content: center;
 }
-
 .canvas {
     border: 1px solid black;
-    margin: 10vh;
+    margin: 5vh;
+}
+
+
+.control-panel {
+    background-color: rgb(122, 164, 255);
+    border: 3px solid black;
+    width: 70%;
+    margin: auto;
+    display: flex;
+    justify-content: space-around;
+    padding: 3vh;
+}
+
+.control-panel button{
+    height: 5vh;
+    width: 100px;
+    font-size: 15px;
+    transition: color 0.3s, background-color 0.3s;
+    cursor: pointer;
+}
+
+
+.select {
+    background-color: white;
+    color: black;
+    border-radius: 5%;
+}
+.select:hover {
+    background-color:black;
+    color: white;
+}
+
+.wall {
+    background-color: black;
+    color: white;
+    border-radius: 5%;
+}
+.wall:hover {
+    background-color:white;
+    color: black;
+}
+
+.remove {
+    background-color: rgb(255, 164, 59);
+    color: white;
+    border: 0px;
+    border-radius: 5%;
+}
+.remove:hover {
+    background-color:white;
+    color: rgb(255, 164, 59);
+}
+
+.start {
+    background-color: rgb(9, 158, 101);
+    color: white;
+    border: 0px;
+    border-radius: 5%;
+}
+.start:hover {
+    background-color:white;
+    color:rgb(9, 158, 101);
+}
+
+.stop {
+    display: none;
+    background-color: red;
+    color: white;
+    border: 0px;
+    border-radius: 5%;
+}
+.stop:hover {
+    background-color:white;
+    color:red;
 }
