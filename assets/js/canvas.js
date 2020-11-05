@@ -6,13 +6,34 @@ canvas.focus();
 startPointerImg = document.querySelector('.pointer');
 destinationImg = document.querySelector('.destination');
 
-const canvasPos = canvas.getBoundingClientRect();
+var canvasPos = canvas.getBoundingClientRect();
 
 const selectButton = document.querySelector('.select');
 const wallButton = document.querySelector('.wall');
 const removeButton = document.querySelector('.remove');
 const startButton = document.querySelector('.start');
 const stopButton = document.querySelector('.stop');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //fuck me
@@ -28,7 +49,8 @@ var grid = {
     'y':20,
     'size':20,
     'color': 'white',
-    'time': 10,
+    'time': 5,
+    'successTime': 100,
 }
 var wallColor = 'black';
 var prevWall = {
@@ -59,15 +81,53 @@ var canvasOffset = {
 
 var State = 'select'; //   1) Select    2) Wall   3) Remove
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.onmousemove = function() {
+    console.log(canvasOffset.x, canvasOffset.y, mouse.x, mouse.y, mouse.realX, mouse.realY);
+    //console.log(innerWidth)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //Event Listeners
 window.addEventListener('resize', function() {
-    //init();
+    init();
 })
 canvas.addEventListener('keydown', arrowPointer);
 
 window.onmousemove = function(e) {
-    mouse.realX = e.clientX;
-    mouse.realY = e.clientY;
+    mouse.realX = e.pageX;
+    mouse.realY = e.pageY;
     if(mouseOffScreen()){
         pointer.hold = false;
         mouseDown.down = false;
@@ -117,8 +177,6 @@ startButton.onclick = function() {
     State = 'start';
 
     BFS();
-
-    //functionVar = setInterval(BFS, grid.time);
 }
 stopButton.onclick = function() {
     stopButton.style.display = 'none';
@@ -126,8 +184,46 @@ stopButton.onclick = function() {
 
     State = 'select';
 
+    resetGrid();
     clearInterval(functionVar);
 }
+
+canvas.onclick = function(e) {
+    console.log(e);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 var cells = [];
 var cellMap = [];
@@ -146,6 +242,7 @@ function init() {
     resizeGrid();
     initCells();
     drawGrid();
+    resetGrid();
     createPointers();
 }
 init();
@@ -164,12 +261,39 @@ update();
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function createPointers() {
-    let startingX=6, startingY=12;
+    let startingX=22, startingY=8;
     pointer = new Pointer(startPointerImg, startingX, startingY, 0);
     pointer.update();
     
-    let destX = 46, destY = 5;
+    let destX = 34, destY = 6;
     destination = new Pointer(destinationImg, destX, destY, 0);
     destination.update();
 }
@@ -252,6 +376,40 @@ function checkPointers() {
         destination.hold = true;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function mouseOffScreen() {
     //console.log(mouse.realX, mouse.realY, canvasOffset, canvas.width, canvas.height)
     //WHAT THE FUCK IS THIS SOMEBODY SHOOT ME
@@ -263,18 +421,28 @@ function mouseOffScreen() {
 }
 
 function resizeGrid() {
+  
+    var canvasPos = canvas.getBoundingClientRect();
+
     let windowX = window.innerWidth;
     windowX -= windowX*0.1;
     grid.size = Math.floor(windowX/grid.x);
     grid.size += 1;
 
-    canvasOffset.x = (window.innerWidth - grid.size*grid.x)/2;
-    
+    canvasOffset.x = (window.innerWidth - (grid.size*grid.x))/2;
+
+
+    canvasOffset.y = canvasPos.top;
+
     let canvasX = grid.x * grid.size;
     let canvasY = grid.y * grid.size;
 
     canvas.width = canvasX;
     canvas.height = canvasY;
+
+    //canvasOffset.x = (window.innerWidth - (grid.size*grid.x))/2;
+    //canvasOffset.x = canvasPos.left;
+    //canvasOffset.y = canvasPos.top;
 
 }
 
@@ -314,6 +482,7 @@ function drawGrid() {
     }
     c.closePath();
 }
+
 
 
 
@@ -421,8 +590,10 @@ var queue = [];
 var queueInd = 0;
 var visited = [];
 function BFS() {
-
-    queue.push({'i':pointer.i, 'j':pointer.j});
+    queue = [];
+    visited = [];
+    queueInd = 0;
+    queue.push({'i':pointer.i, 'j':pointer.j, 'prev':{'i':0, 'j':0}, });
     visited = [];
     for(let i=0;i<grid.x;i++){
         visited[i] = new Array(grid.y);
@@ -441,6 +612,7 @@ function bfsTick() {
     //console.log(cell)
 
     if(typeof cell == 'undefined'){
+        //FAILURE
         alert('make it possible u dumb piece of shit!');
         clearInterval(functionVar);
         return;
@@ -449,29 +621,45 @@ function bfsTick() {
     colorCell(cell.i, cell.j, 'green');
 
     if(cell.i == destination.i && cell.j == destination.j){
-        alert('FOUND IIIT!!')
+        //SUCCESS
         clearInterval(functionVar);
+        queueInd -= 1;
+        functionVar = setInterval(drawPathBFS, grid.successTime)
     }
 
     //Check all 4 Directions
-    bfsChecker(cell.i + 1, cell.j);
-    bfsChecker(cell.i - 1, cell.j);
-    bfsChecker(cell.i, cell.j + 1);
-    bfsChecker(cell.i, cell.j - 1);
+    if(cell.i + 1 < grid.x){}
+        bfsChecker(cell.i + 1, cell.j);
+    if(cell.i - 1 >= 0)
+        bfsChecker(cell.i - 1, cell.j);
+    if(cell.j + 1 < grid.y)
+        bfsChecker(cell.i, cell.j + 1);
+    if(cell.j - 1 >= 0)
+        bfsChecker(cell.i, cell.j - 1);
 }
 function bfsChecker(i, j){
     if(cellMap[i][j]!='X' && !visited[i][j]){
-        console.log(i, j, visited[i][j])
-        queue.push({'i': i, 'j': j})
+        queue.push({'i': i, 'j': j, 'prev': queueInd});
         visited[i][j] = 1;
     }
 }
 
 
+function drawPathBFS() {
+    queueInd = queue[queueInd].prev;
 
-function wait(ms){
-    var d = new Date();
-    var d2 = null;
-    do { d2 = new Date();  }
-    while(d2-d < ms);
+    //console.log(queue[queueInd])
+
+    let i = queue[queueInd].i, j = queue[queueInd].j;
+
+    colorCell(i, j, 'blue')
+}
+
+function resetGrid() {
+    //console.log('fuck me')
+    for(let i=0;i<grid.x;i++) {
+        for(let j=0;j<grid.y;j++) {
+            colorCell(i, j, cells[i][j].color)
+        }
+    }
 }
