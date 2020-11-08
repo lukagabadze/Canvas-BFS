@@ -204,10 +204,12 @@ stopButton.onclick = function() {
 }
 
 resetButton.onclick = function() {
+    if(State=='start') return;
+
     for(let i=0;i<grid.x;i++){
         for(let j=0;j<grid.y;j++){
             cellMap[i][j]='0';
-            cells[i][j] = grid.color;
+            cells[i][j].color = grid.color;
             colorCell(i, j, grid.color)
         }
     }
@@ -684,6 +686,10 @@ function drawPathBFS() {
     //console.log(queue[queueInd])
 
     let i = queue[queueInd].i, j = queue[queueInd].j;
+
+    if(i==pointer.i && j==pointer.j){
+        clearInterval(functionVar);
+    }
 
     colorCell(i, j, 'blue')
 }
