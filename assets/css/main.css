@@ -93,3 +93,14 @@
     background-color:white;
     color:red;
 }
+
+.reset {
+    background-color: rgb(212, 68, 128);
+    color: white;
+    border: 0px;
+    border-radius: 5%;
+}
+.reset:hover {
+    background-color:white;
+    color:rgb(212, 68, 128);
+}

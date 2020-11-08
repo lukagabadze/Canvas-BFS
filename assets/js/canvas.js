@@ -13,7 +13,7 @@ const wallButton = document.querySelector('.wall');
 const removeButton = document.querySelector('.remove');
 const startButton = document.querySelector('.start');
 const stopButton = document.querySelector('.stop');
-
+const resetButton = document.querySelector('.reset');
 
 
 
@@ -50,7 +50,7 @@ var grid = {
     'size':20,
     'color': 'white',
     'time': 5,
-    'successTime': 100,
+    'successTime': 30,
 }
 var wallColor = 'black';
 var prevWall = {
@@ -100,7 +100,7 @@ var State = 'select'; //   1) Select    2) Wall   3) Remove
 
 
 document.onmousemove = function() {
-    console.log(canvasOffset.x, canvasOffset.y, mouse.x, mouse.y, mouse.realX, mouse.realY);
+    //console.log(canvasOffset.x, canvasOffset.y, mouse.x, mouse.y, mouse.realX, mouse.realY);
     //console.log(innerWidth)
 }
 
@@ -136,6 +136,7 @@ window.onmousemove = function(e) {
     }
 }
 
+
 canvas.onmousemove = function(e) {
     mouse.realX = e.clientX;
     mouse.realY = e.clientY;
@@ -147,12 +148,20 @@ canvas.onmousemove = function(e) {
     
     if(State == 'wall')
         wallInit();
+
+    if(State == 'remove')
+        removeCell();
+    
 }
 canvas.onmousedown = function(e) {
     mouseDown.down = true;
     mouseDown.x = e.clientX - canvasOffset.x;
     mouseDown.y = e.clientY - canvasOffset.y;
     checkPointers();
+    if(State == 'wall')
+        wallInit();
+    if(State == 'remove')
+        removeCell();
 }
 canvas.onmouseup = function(e) {
     mouseDown.down = false;
@@ -168,6 +177,12 @@ selectButton.onclick = function() {
 wallButton.onclick = function() {
     if(State != 'start')
         State = 'wall';
+}
+
+removeButton.onclick = function() {
+    if(State != 'start'){
+        State='remove';
+    }
 }
 
 startButton.onclick = function() {
@@ -188,9 +203,16 @@ stopButton.onclick = function() {
     clearInterval(functionVar);
 }
 
-canvas.onclick = function(e) {
-    console.log(e);
+resetButton.onclick = function() {
+    for(let i=0;i<grid.x;i++){
+        for(let j=0;j<grid.y;j++){
+            cellMap[i][j]='0';
+            cells[i][j] = grid.color;
+            colorCell(i, j, grid.color)
+        }
+    }
 }
+
 
 
 
@@ -520,6 +542,17 @@ function wallInit() {
     prevWall.i = wallI;
     prevWall.j = wallJ;
 }
+function removeCell() {
+    if(mouseOffScreen()) return;
+
+    let removeI = PosToInd(mouse.x), removeJ = PosToInd(mouse.y);
+
+    if(mouseDown.down == true){
+        cells[removeI][removeJ].color = grid.color;
+        cellMap[removeI][removeJ] = '0';
+        clearCell(removeI, removeJ);
+    }
+}
 
 
 
@@ -592,8 +625,8 @@ var visited = [];
 function BFS() {
     queue = [];
     visited = [];
-    queueInd = 0;
-    queue.push({'i':pointer.i, 'j':pointer.j, 'prev':{'i':0, 'j':0}, });
+    queueInd = -1;
+    queue.push({'i':pointer.i, 'j':pointer.j, 'prev':0, });
     visited = [];
     for(let i=0;i<grid.x;i++){
         visited[i] = new Array(grid.y);
@@ -606,8 +639,8 @@ function BFS() {
 }
 
 function bfsTick() {
+    queueInd+=1;
     let cell = queue[queueInd];
-    queueInd += 1;
     
     //console.log(cell)
 
@@ -623,7 +656,7 @@ function bfsTick() {
     if(cell.i == destination.i && cell.j == destination.j){
         //SUCCESS
         clearInterval(functionVar);
-        queueInd -= 1;
+        
         functionVar = setInterval(drawPathBFS, grid.successTime)
     }
 
