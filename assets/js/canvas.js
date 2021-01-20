@@ -648,7 +648,7 @@ function bfsTick() {
 
     if(typeof cell == 'undefined'){
         //FAILURE
-        alert('make it possible u dumb piece of shit!');
+        alert('Its impossible');
         clearInterval(functionVar);
         return;
     }
